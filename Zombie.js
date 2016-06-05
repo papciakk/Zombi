@@ -73,6 +73,11 @@ class Zombie {
 		this.state = state;
 		this.playedOnce = false;
 	}
+	
+	resetState() {
+		this.state = ZombieState.NONE;
+		this.animation.stop();
+	}
 
 	run(to) {
 		var currentPos = this.getPosition();

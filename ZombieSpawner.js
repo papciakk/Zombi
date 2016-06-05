@@ -14,6 +14,8 @@ class ZombieSpawner {
 		this.zombie_shininess = 60.0;
 		
 		this.scene = scene;
+
+        this.zombies = [];
 	}
 
 	
@@ -45,7 +47,7 @@ class ZombieSpawner {
         );
 	}
 
-    spawn() {
+    spawn(posx, posy) {
         if(this.zombie_model === undefined) {
             throw "Model not loaded";
         }
@@ -57,10 +59,24 @@ class ZombieSpawner {
 
         var zombie = new Zombie(copiedZombieModel, animation);
         copiedZombieModel.scale.set(6, 6, 6);
+        zombie.setPosition(posx, posy);
 
         this.scene.add(copiedZombieModel);
 
+        this.zombies.push(zombie);
+
         return zombie;
+    }
+
+    updateZombies(delta) {
+        $.each(this.zombies, function(i, zombie) {
+            var distance_to_player = zombie.getDistanceToPlayer();
+
+            //zombie.setVisibled(distance_to_player < 1000);
+
+            zombie.update(delta);
+        });
+
     }
 	
 }

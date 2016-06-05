@@ -120,6 +120,10 @@ THREE.PointerLockControls = function ( camera ) {
 
 	};
 
+	this.getPosition = function () {
+		return yawObject.position;
+	};
+
 	this.getDirection = function() {
 
 		// assumes the camera itself is not rotated

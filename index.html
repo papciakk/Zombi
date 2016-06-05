@@ -106,6 +106,7 @@
 
             var emitter, particleGroup;
             var zombie;
+            var zombie1;
 			
 			var clock = new THREE.Clock();
 			var keyboard = new THREEx.KeyboardState();
@@ -113,7 +114,12 @@
 			var raycaster = new THREE.Raycaster();
 			var mouse = new THREE.Vector2();
 
-			function onMouseMove(event) {
+            function getPlayerPosition() {
+                return controls.getObject().position;
+            }
+
+
+            function onMouseMove(event) {
 				mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
 				mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
 			}
@@ -127,12 +133,14 @@
 		
 		<script src='ZombieSpawner.js'></script>
 		<script src='Zombie.js'></script>
+		<script src='ZombieAI.js'></script>
 
         <script type="text/javascript" src="SPE.min.js"></script>
 		
 		
 		<script>
 			$(function () {
+
 
 
                 function initParticles() {
@@ -206,7 +214,7 @@
 
 				controls = new THREE.PointerLockControls( camera );
 				scene.add( controls.getObject() );
-				
+
 				
 
 
@@ -245,7 +253,11 @@
 				
 				zombieSpawner = new ZombieSpawner(scene);
                 zombieSpawner.init().then(function() {
+                    for(var i=0; i< 20; i++) {
+                        zombieSpawner.spawn(Math.random()*2000-1000, Math.random()*2000-1000);
+                    }
                     zombie = zombieSpawner.spawn();
+					//zombie1 = zombieSpawner.spawn();
                 });
 
 				
@@ -371,11 +383,6 @@
 
 				stats.begin();
 				
-				if(zombie) {
-
-                    zombie.update();
-				}
-				
 				if(gun) {
 					if(shooting) {
 						gun.position.z = -7.9;
@@ -399,7 +406,7 @@
 
 				if(zombie) {
 					zombie.aimed = false;
-					raycaster.set( controls.getObject().position, camera.getWorldDirection() );	
+					raycaster.set( controls.getObject().position, camera.getWorldDirection() );
 					var intersects = raycaster.intersectObjects( [zombie.getMesh()], true);
 					
 					for ( var i = 0; i < intersects.length; i++ ) {
@@ -411,6 +418,8 @@
 				
 				var delta = clock.getDelta();
 
+                zombieSpawner.updateZombies(delta);
+				
                 //particleGroup.tick( delta);
 				
 				controls.update(delta*1000);

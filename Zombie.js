@@ -32,7 +32,7 @@ class Zombie {
 
 		this.isAlive = true;
 		this.aimed = false;
-		this.health = 100;
+		this.health = Math.random()*20+10;
 		
 		this.ai = new ZombieAI(this);
 	}
@@ -93,37 +93,39 @@ class Zombie {
 	}
 
 	run(to) {
-		//if(this.state != ZombieState.RUN) {
-			var currentPos = this.getPosition();
-			this.speed = 1.5;
-			this.direction = currentPos.sub(to).normalize().multiplyScalar(this.speed).negate();
-			this.destination = to;
 
-			this.changeState(ZombieState.RUN);
+        var currentPos = this.getPosition();
+        this.speed = 1.5;
+        this.direction = currentPos.sub(to).normalize().multiplyScalar(this.speed).negate();
+        this.destination = to;
 
-			this.setRotation(Math.PI/2-this.direction.angle());
-		//}
+        if(this.state != ZombieState.RUN) {
+            this.changeState(ZombieState.RUN);
+        }
+
+        this.setRotation(Math.PI/2-this.direction.angle());
 	}
 
 	walk(to) {
-		if(this.state != ZombieState.WALK) {
-			var currentPos = this.getPosition();
+        var currentPos = this.getPosition();
 
-            if(Math.random() > 0.5) {
-                this.walkStyle = 1;
-                this.speed = 0.5;
-            } else {
-                this.walkStyle = 2;
-                this.speed = 0.15;
-            }
+        if(Math.random() > 0.5) {
+            this.walkStyle = 1;
+            this.speed = 0.5;
+        } else {
+            this.walkStyle = 2;
+            this.speed = 0.15;
+        }
 
-			this.direction = currentPos.sub(to).normalize().multiplyScalar(this.speed).negate();
-			this.destination = to;
+        this.direction = currentPos.sub(to).normalize().multiplyScalar(this.speed).negate();
+        this.destination = to;
 
-			this.changeState(ZombieState.WALK);
+        if(this.state != ZombieState.WALK) {
+            this.changeState(ZombieState.WALK);
+        }
 
-			this.setRotation(Math.PI/2-this.direction.angle());
-		}
+        this.setRotation(Math.PI/2-this.direction.angle());
+
 	}
 	
 	idle() {
@@ -134,19 +136,25 @@ class Zombie {
 		}
 	}
 	
-	hit() {
-		if(this.state != ZombieState.HIT) {
-			console.log(this.isAlive);
+	hit(distance) {
+        
 			if(this.isAlive) {
 				this.changeState(ZombieState.HIT);
 				this.health -= 10;
+                    //(10 + Math.pow(10, 1/distance));
 			}
-		}
+
 	}
-	
-	die() {
-		this.changeState(ZombieState.DIE);
-	}
+
+    die() {
+        this.changeState(ZombieState.DIE);
+    }
+
+    attack() {
+        if(this.state != ZombieState.ATTACK) {
+            this.changeState(ZombieState.ATTACK);
+        }
+    }
 	
 	updatePosition() {
 		var currentPos = this.getPosition();		
@@ -187,8 +195,10 @@ class Zombie {
 				case ZombieState.ATTACK:
 					if(Math.random() < 0.5) {
 						this.playAni("attack1");
+                        this.attackStyle = 1;
 					} else {
 						this.playAni("attack2");
+                        this.attackStyle = 2;
 					}
 					this.canInterrupt = true;
 				break;
@@ -221,7 +231,13 @@ class Zombie {
 			this.isAlive = false;
 		}
 		
-
+        if(this.state == ZombieState.ATTACK) {
+            var frame = Math.round(this.animation.getCurrentFrame());
+            if((this.attackStyle == 1 && frame == 335) ||
+               (this.attackStyle == 2 && frame == 375)) {
+                    hitPlayer();
+            }
+        }
 		
 	}
 }

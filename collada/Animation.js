@@ -51,6 +51,11 @@ THREE.Animation.prototype = {
 		this.timeStop = stop*ani_scale;
 		this.play(start*ani_scale);
 	},
+	
+	getCurrentFrame: function() {
+		var ani_scale = this.data.length/this.data.hierarchy[0].keys.length;
+		return this.currentTime/ani_scale;
+	},
 
 	stop: function() {
 

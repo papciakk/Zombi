@@ -47,6 +47,8 @@ if ( havePointerLock ) {
 	document.addEventListener( 'webkitpointerlockerror', pointerlockerror, false );
 
 	instructions.addEventListener( 'click', function ( event ) {
+	
+		shootingDisabled = false;
 
 		instructions.style.display = 'none';
 
